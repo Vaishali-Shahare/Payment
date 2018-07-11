@@ -1,0 +1,101 @@
+<div class="container">
+	<div class="row">
+		<div class="col-md-6">
+			<h1>Payment Details</h1>
+			<form>
+				<div class="form-group">
+					<label for="amount">Amount:</label>
+					<div class="input-wrapper">
+						<input type="number" class="form-control" id="amount" name="amount" [(ngModel)]="amount" autocomplete="off" min="0">
+						<span>
+							<label>USD</label>
+						</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="country">Country:</label>
+					<select class="form-control" [ngModel]="country.Code" (ngModelChange)="onCountryChange($event)" name="country.Name">  
+				        <option *ngFor="let country of countries;let i=index" [value]= "country.Code">{{country.Name}} </option>  
+					</select> 
+				</div>
+				<div class="form-group">
+					<label for="mode">Payment Methods:</label>
+					
+					<div *ngIf="paymentModes; else NoPayment" id="payment-div">
+						<div *ngFor="let mode of paymentModes" class="payment-mode">
+							<input type="radio" name="{{mode.name}}" (click)="onPaymentModeSelect(mode)" 
+							 [checked]="mode === paymentOption" id="{{mode.id}}" class="radio">
+							<label for="{{mode.id}}">{{mode.name}} <img [src]="mode.img_url"></label>
+							
+						</div>
+					</div>
+					
+					<ng-template #NoPayment>
+						<div>No Payment Method available</div>
+					</ng-template>
+				</div>
+			</form>
+			<form [formGroup]="paymentForm" (ngSubmit)="onFormSubmit()" *ngIf="paymentFormVisible">
+				<div class="form-group">
+						<label for="cardName">Card Holder Name:</label>
+						<input type="text" class="form-control" name="cardName" formControlName="cardName" autocomplete="off" 
+						 placeholder="First name Last name">
+						<div *ngIf="cardName.errors && isValidFormSubmitted != null && !isValidFormSubmitted" [ngClass] = "'error'"> 
+							<div *ngIf="cardName.errors.required">
+								Card Holder Name required.
+							</div>  
+							<div *ngIf="cardName.errors.pattern">
+								User name not valid.
+							</div> 
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="cardNumber">Card Number:</label>
+						<input type="text" class="form-control" formControlName="cardNumber" name="cardNumber"  autocomplete="off" (keypress)="onCardNumberChange($event)">
+						<div *ngIf="cardNumber.errors && isValidFormSubmitted != null && !isValidFormSubmitted" [ngClass] = "'error'"> 
+							<div *ngIf="cardNumber.errors.required">
+								cardNumber required.
+							</div> 
+						</div>
+					</div>
+					<div class="form-group expiry-class">
+						<label for="amount">Expiry Date:</label>
+						<div>
+							<input type="number" class="form-control" id="month" name="month" formControlName="month" autocomplete="off" min="1" max="12" >
+							<label class="slash">/</label>
+							<input type="number" class="form-control" id="year" name="year" formControlName="year" autocomplete="off" >
+						</div>
+						<div *ngIf="month.errors && isValidFormSubmitted != null && !isValidFormSubmitted" [ngClass] = "'error'"> 
+							<div *ngIf="month.errors.required">
+								Month is required.
+							</div>
+						</div>
+
+						<div *ngIf="year.errors && isValidFormSubmitted != null && !isValidFormSubmitted" [ngClass] = "'error'"> 
+							<div *ngIf="year.errors.required">
+								Year is required.
+							</div> 
+						</div>
+						
+					</div>
+					<div class="form-group expiry-class">
+						<label for="cvv">CVV:</label>
+						<div>
+							<input type="number" class="form-control" id="cvv" name="cvv" formControlName="cvv" autocomplete="off"
+							min="3" max="4">
+						</div>
+						<div *ngIf="cvv.errors && isValidFormSubmitted != null && !isValidFormSubmitted" [ngClass] = "'error'"> 
+							<div *ngIf="cvv.errors.required">
+								CVV is required.
+							</div> 
+						</div>
+					</div>
+
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary">Pay {{amount}} <span *ngIf="amount">USD</span></button>
+					</div>
+			</form>
+		</div>
+		
+	</div>
+</div>
